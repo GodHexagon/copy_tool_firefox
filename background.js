@@ -23,7 +23,8 @@ browser.runtime.onInstalled.addListener(() => {
 browser.action.onClicked.addListener((tab) => {
   const title = tab.title || tab.url;
   const html = `<a href="${escapeHtml(tab.url)}">${escapeHtml(title)}</a>`;
-  copy({ "text/html": html, "text/plain": title });
+  // 書式なしの貼り付け先には URL が入る
+  copy({ "text/html": html, "text/plain": tab.url });
 });
 
 browser.menus.onClicked.addListener((info, tab) => {
