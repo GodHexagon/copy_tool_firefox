@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "copy-title-url@godhexagon": {
+      "updates": [
+        {
+          "version": "1.0.1",
+          "update_link": "https://github.com/GodHexagon/copy_tool_firefox/releases/download/v1.0.1/copy_title_url-1.0.1.xpi"
+        }
+      ]
+    }
+  }
+}
