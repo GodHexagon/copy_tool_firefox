@@ -2,6 +2,7 @@
 
 const MENU_COPY_TITLE = "copy-title";
 const MENU_COPY_URL = "copy-url";
+const MENU_COPY_FAVICON = "copy-favicon";
 
 // ツールバーボタンの右クリックメニュー
 browser.runtime.onInstalled.addListener(() => {
@@ -14,6 +15,11 @@ browser.runtime.onInstalled.addListener(() => {
     browser.menus.create({
       id: MENU_COPY_URL,
       title: "URLをコピー",
+      contexts: ["action"],
+    });
+    browser.menus.create({
+      id: MENU_COPY_FAVICON,
+      title: "ファビコンをコピー",
       contexts: ["action"],
     });
   });
@@ -76,11 +82,15 @@ async function faviconToPng(url) {
   }
 }
 
-browser.menus.onClicked.addListener((info, tab) => {
+browser.menus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === MENU_COPY_TITLE) {
     copy({ "text/plain": tab.title || "" });
   } else if (info.menuItemId === MENU_COPY_URL) {
     copy({ "text/plain": tab.url || "" });
+  } else if (info.menuItemId === MENU_COPY_FAVICON) {
+    // 画像のみをコピー（取得できなければ失敗バッジ）
+    const png = await faviconToPng(tab.favIconUrl).catch(() => null);
+    flashBadge(png ? await copyWithImage({}, png) : false);
   }
 });
 
