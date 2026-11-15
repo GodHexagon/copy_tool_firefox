@@ -5,8 +5,11 @@
   "description": "ページタイトルとURLをコピーするツールバーボタン",
   "browser_specific_settings": {
     "gecko": {
-      "id": "copy-title-url@example.local",
-      "strict_min_version": "115.0"
+      "id": "copy-title-url@godhexagon",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
   "icons": {
