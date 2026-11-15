@@ -26,32 +26,20 @@ browser.runtime.onInstalled.addListener(() => {
 });
 
 // 左クリック: タイトルをリンク付き（リッチテキスト）でコピー
-// ファビコンが取得できれば PNG 画像も一緒にクリップボードへ入れる
-browser.action.onClicked.addListener(async (tab) => {
+browser.action.onClicked.addListener((tab) => {
   const title = tab.title || tab.url;
   const html = `<a href="${escapeHtml(tab.url)}">${escapeHtml(title)}</a>`;
   // 書式なしの貼り付け先には URL が入る
-  const data = { "text/html": html, "text/plain": tab.url };
-
-  const png = await faviconToPng(tab.favIconUrl).catch(() => null);
-  if (png && (await copyWithImage(data, png))) {
-    flashBadge(true);
-    return;
-  }
-  copy(data);
+  copy({ "text/html": html, "text/plain": tab.url });
 });
 
-// テキストと画像をまとめて書き込む（失敗したら false）
-async function copyWithImage(data, png) {
+// PNG 画像をクリップボードへ書き込む（失敗したら false）
+async function copyImage(png) {
   try {
-    const items = { "image/png": png };
-    for (const [type, value] of Object.entries(data)) {
-      items[type] = new Blob([value], { type });
-    }
-    await navigator.clipboard.write([new ClipboardItem(items)]);
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);
     return true;
   } catch (e) {
-    console.warn("画像付きコピーに失敗したため、テキストのみコピーします", e);
+    console.warn("画像のコピーに失敗しました", e);
     return false;
   }
 }
@@ -90,7 +78,7 @@ browser.menus.onClicked.addListener(async (info, tab) => {
   } else if (info.menuItemId === MENU_COPY_FAVICON) {
     // 画像のみをコピー（取得できなければ失敗バッジ）
     const png = await faviconToPng(tab.favIconUrl).catch(() => null);
-    flashBadge(png ? await copyWithImage({}, png) : false);
+    flashBadge(png ? await copyImage(png) : false);
   }
 });
 
